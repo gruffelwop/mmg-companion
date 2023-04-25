@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:mmg_companion/constants/colors.dart';
+import 'package:mmg_companion/utilities/widgets/custom_text_widgets.dart';
 
 typedef DialogOptionBuilder<T> = Map<String, T?> Function();
 
@@ -14,15 +16,11 @@ Future<T?> showGenericDialog<T>({
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(
-          title,
-          style: TextStyle(
-            color: primaryColor,
-          ),
+        title: CustomBodyText(
+          content: title,
         ),
-        content: Text(
-          content,
-          style: TextStyle(color: primaryColor),
+        content: CustomBodyMultilineText(
+          content: content,
         ),
         backgroundColor: backgroundColor,
         elevation: 0,

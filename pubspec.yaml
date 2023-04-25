@@ -39,6 +39,7 @@ dependencies:
   html: ^0.15.2
   intl: ^0.18.0
   shared_preferences: ^2.0.18
+  keyboard_dismisser: ^3.0.0
 
 dev_dependencies:
   flutter_test:

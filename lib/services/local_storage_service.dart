@@ -1,23 +1,29 @@
+import 'package:mmg_companion/constants/app_constant.dart';
 import 'package:mmg_companion/services/conversion_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {
   static SharedPreferences? _preferences;
 
-  static const _keyGender = "gender";
+  // static const _keyGender = "gender";
   static const _keyCourses = "courses";
-  static const _keyClass = "class";
+  static const _keyClasses = "classes";
+  // static const _keyClass = "class";
   static const _keyIsTeacher = "isTeacher";
   static const _keyAbbreviation = "abbreviation";
   static const _keyIsRegistered = "isRegistered";
   static const _keyPlanPassword = "planPassword";
   static const _keyPlanUsername = "planUsername";
   static const _keyIsOberstufe = "isOberstufe";
+  static const _keyAutomaticCourseEnrollment = "automaticCourseEnrollment";
 
-  // static const _keyPageTodayOrLastSchoolDay = "pageTodayOrLastSchoolDay";
-  // static const _keyPageNextSchoolDay = "pageNextSchoolDay";
-  // static const _keyPageSchoolDayAfterNextSchoolDay =
-  //     "pageSchoolDayAfterNextSchoolDay";
+  static const _keyStartPage = "startPage";
+
+  static const _keyLastUpdatedTodayOrLastSchoolDay =
+      "lastUpdatedTodayOrLastSchoolDay";
+  static const _keyLastUpdatedNextSchoolDay = "lastUpdatedNextSchoolDay";
+  static const _keyLastUpdatedSchoolDayAfterNextSchoolDay =
+      "lastUpdatedSchoolDayAfterNextSchoolDay";
 
   static const _keyDateTodayOrLastSchoolDay = "dateTodayOrLastSchoolDay";
   static const _keyDateNextSchoolDay = "dateNextSchoolDay";
@@ -47,68 +53,46 @@ class LocalStorage {
     _preferences = await SharedPreferences.getInstance();
   }
 
-  // Experimental
+  // Automatic Course Enrollment
 
-  static Future setString(String key, String value) async {
-    await _preferences!.setString(key, value);
+  static Future setAutomaticCourseEnrollment(bool value) async {
+    await _preferences!.setBool(_keyAutomaticCourseEnrollment, value);
   }
 
-  static String? getString(String key) {
-    return _preferences!.getString(key);
+  static bool? getAutomaticCourseEnrollment() {
+    return _preferences!.getBool(_keyAutomaticCourseEnrollment);
   }
 
-  static Future setList(String key, List<String> value) async {
-    await _preferences!.setStringList(key, value);
+  // Start Page
+
+  static Future setStartPage(String value) async {
+    await _preferences!.setString(_keyStartPage, value);
   }
 
-  static List<String>? getList(String key) {
-    return _preferences!.getStringList(key);
+  static String? getStartPage() {
+    return _preferences!.getString(_keyStartPage);
   }
 
-  static Future setBool(String key, bool value) async {
-    await _preferences!.setBool(key, value);
+  static int? getStartPageIndex() {
+    return siteStringMappedToSiteIndex[_preferences!.getString(_keyStartPage)];
   }
 
-  static bool? getBool(String key) {
-    return _preferences!.getBool(key);
-  }
+  // Classes and Courses
 
-  // Gender
-
-  static Future setGender(String gender) async {
-    await _preferences!.setString(_keyGender, gender);
-  }
-
-  static String? getGender() {
-    return _preferences!.getString(_keyGender);
-  }
-
-  // Courses
-
-  static Future setCourses(String classes) async {
-    await _preferences!.setString(_keyCourses, classes);
+  static Future setCourses(String courses) async {
+    await _preferences!.setString(_keyCourses, courses);
   }
 
   static String? getCourses() {
     return _preferences!.getString(_keyCourses);
   }
 
-  // static Future setCourses(List<String> courses) async {
-  //   await _preferences!.setStringList(_keyCourses, courses);
-  // }
-
-  // static List? getCourses() {
-  //   return _preferences!.getStringList(_keyCourses);
-  // }
-
-  // Class
-
-  static Future setClass(String cClass) async {
-    await _preferences!.setString(_keyClass, cClass);
+  static Future setClasses(String classes) async {
+    await _preferences!.setString(_keyClasses, classes);
   }
 
-  static String? getClass() {
-    return _preferences!.getString(_keyClass);
+  static String? getClasses() {
+    return _preferences!.getString(_keyClasses);
   }
 
   // Teacher
@@ -240,6 +224,42 @@ class LocalStorage {
     final list = _preferences!
         .getStringList(_keyIndividualPlanSchoolDayAfterNextSchoolDay);
     return convertListToPlan(list!);
+  }
+
+  // Last Updated
+
+  static Future setLastUpdatedTodayOrLastSchoolDay(DateTime date) async {
+    final dateString = date.toIso8601String();
+    await _preferences!
+        .setString(_keyLastUpdatedTodayOrLastSchoolDay, dateString);
+  }
+
+  static DateTime getLastUpdatedTodayOrLastSchoolDay() {
+    final dateString =
+        _preferences!.getString(_keyLastUpdatedTodayOrLastSchoolDay);
+    return DateTime.tryParse(dateString!)!;
+  }
+
+  static Future setLastUpdatedNextSchoolDay(DateTime date) async {
+    final dateString = date.toIso8601String();
+    await _preferences!.setString(_keyLastUpdatedNextSchoolDay, dateString);
+  }
+
+  static DateTime getLastUpdatedNextSchoolDay() {
+    final dateString = _preferences!.getString(_keyLastUpdatedNextSchoolDay);
+    return DateTime.tryParse(dateString!)!;
+  }
+
+  static Future setLastUpdatedSchoolDayAfterNextSchoolDay(DateTime date) async {
+    final dateString = date.toIso8601String();
+    await _preferences!
+        .setString(_keyLastUpdatedSchoolDayAfterNextSchoolDay, dateString);
+  }
+
+  static DateTime getLastUpdatedSchoolDayAfterNextSchoolDay() {
+    final dateString =
+        _preferences!.getString(_keyLastUpdatedSchoolDayAfterNextSchoolDay);
+    return DateTime.tryParse(dateString!)!;
   }
 
   // Dates

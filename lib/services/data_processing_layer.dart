@@ -23,6 +23,32 @@ DateTime getPlanDate(dom.Document html) {
   );
 }
 
+// Last Updated
+
+DateTime getPlanLastUpdated(dom.Document html) {
+  List<String> dates = html
+      .querySelectorAll(".TextAktuellesDatum")
+      .map((element) => element.innerHtml.trim())
+      .toList();
+
+  String date = dates.first;
+
+  int hour = int.parse(date.split(" ").reversed.toList()[0].split(":")[0]);
+  int minute = int.parse(date.split(" ").reversed.toList()[0].split(":")[1]);
+
+  int day = int.parse(date.split(" ").reversed.toList()[1].split(".")[0]);
+  int month = int.parse(date.split(" ").reversed.toList()[1].split(".")[1]);
+  int year = int.parse(date.split(" ").reversed.toList()[1].split(".")[2]);
+
+  return DateTime(
+    year,
+    month,
+    day,
+    hour,
+    minute,
+  );
+}
+
 // General Plan
 
 List<List<String>> getPlan(dom.Document html) {
@@ -48,19 +74,6 @@ List<List<String>> getPlan(dom.Document html) {
     );
   }
 
-  // for (var element in chunks) {
-  //   element.removeAt(5);
-  // }
-
-  // for (int i = 0; i < chunks.length; i++) {
-  //   List<String> list = chunks[i];
-  //   for (int k = 0; k < list.length; k++) {
-  //     if (list[k].isEmpty) {
-  //       list[k] = "[${columnNames[k]}]";
-  //     }
-  //   }
-  // }
-
   return chunks;
 }
 
@@ -71,12 +84,13 @@ List<List<String>> getIndividualPlan(List<List<String>> inputPlan) {
   bool isOberstufe = LocalStorage.getIsOberstufe() ?? false;
 
   String teacherFilter = LocalStorage.getAbbreviation() ?? "";
-  List<String> oberstufeFilter = LocalStorage.getCourses() == ""
+  List<String> coursesFilter = LocalStorage.getCourses() == ""
       ? []
       : LocalStorage.getCourses()!.split(", ");
 
-  // TODO: Missing implementation of classes
-  List<String> unterUndMittelstufeFilter = [];
+  List<String> classesFilter = LocalStorage.getClasses() == ""
+      ? []
+      : LocalStorage.getClasses()!.split(", ");
 
   List<List<String>> generalVertretungsplan = inputPlan;
   List<List<String>> individualVertretungsplan = [];
@@ -87,15 +101,13 @@ List<List<String>> getIndividualPlan(List<List<String>> inputPlan) {
 
   // The user is in the 'Oberstufe'
 
-  if (isTeacher == false && isOberstufe == true && oberstufeFilter.isEmpty) {
+  if (isTeacher == false && isOberstufe == true && coursesFilter.isEmpty) {
     return inputPlan;
   }
 
   // The user is in the 'Unter-or Mittelstufe'
 
-  if (isTeacher == false &&
-      isOberstufe == false &&
-      unterUndMittelstufeFilter.isEmpty) {
+  if (isTeacher == false && isOberstufe == false && classesFilter.isEmpty) {
     return inputPlan;
   }
 
@@ -112,7 +124,7 @@ List<List<String>> getIndividualPlan(List<List<String>> inputPlan) {
   // The user is in the 'Oberstufe'
 
   if (isTeacher == false && isOberstufe == true) {
-    for (String className in oberstufeFilter) {
+    for (String className in coursesFilter) {
       for (List<String> list in generalVertretungsplan) {
         if (className == list[0]) {
           individualVertretungsplan.add(list);
@@ -125,7 +137,7 @@ List<List<String>> getIndividualPlan(List<List<String>> inputPlan) {
   // The user is in the 'Unter-or Mittelstufe'
 
   if (isTeacher == false && isOberstufe == false) {
-    for (String className in unterUndMittelstufeFilter) {
+    for (String className in classesFilter) {
       for (List<String> list in generalVertretungsplan) {
         if (className == list[0]) {
           individualVertretungsplan.add(list);

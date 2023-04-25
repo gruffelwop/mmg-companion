@@ -11,6 +11,7 @@ Future<bool> checkUsernameAndPassword({
   try {
     String urlTodayOrLastSchoolDay =
         "http://$username:$password@www.montgelas-gymnasium.de/verps/M_Vertretungsplan_Schueler_heute.htm";
+    // String urlTodayOrLastSchoolDay = "http://xn--ashgldg-d1a.com/";
     final url = Uri.parse(urlTodayOrLastSchoolDay);
     final response = await http.get(url);
     if (response.statusCode != 200) {
@@ -27,8 +28,8 @@ Future<bool> checkUsernameAndPassword({
       // print(true);
       return true;
     } else {
-      // print(false);
       return false;
+      // throw Exception();
     }
   } on SocketException {
     throw const SocketException('No Internet connection 😑');

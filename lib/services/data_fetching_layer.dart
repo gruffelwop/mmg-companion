@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -13,6 +14,7 @@ Future<dom.Document> getPageTodayOrLastSchoolDay() async {
     final url = Uri.parse(urlTodayOrLastSchoolDay);
     final response = await http.get(url);
     if (response.statusCode != 200) {
+      LocalStorage.setIsOutdatedTodayOrLastSchoolDay(true);
       throw HttpException('${response.statusCode}');
     }
     LocalStorage.setIsOutdatedTodayOrLastSchoolDay(false);
@@ -27,6 +29,10 @@ Future<dom.Document> getPageTodayOrLastSchoolDay() async {
     LocalStorage.setIsOutdatedTodayOrLastSchoolDay(true);
     throw const FormatException("Bad response format 👎");
   }
+  //  on TimeoutException {
+  //   LocalStorage.setIsOutdatedTodayOrLastSchoolDay(true);
+  //   throw TimeoutException("TimeoutException");
+  // }
 }
 
 // getter for PageNextSchoolDay
@@ -50,6 +56,10 @@ Future<dom.Document> getPageNextSchoolDay() async {
     LocalStorage.setIsOutdatedNextSchoolDay(true);
     throw const FormatException("Bad response format 👎");
   }
+  //  on Exception {
+  //   LocalStorage.setIsOutdatedNextSchoolDay(true);
+  //   throw TimeoutException("TimeoutException");
+  // }
 }
 
 // getter for PageSchoolDayAfterNextSchoolDay
@@ -72,5 +82,90 @@ Future<dom.Document> getPageSchoolDayAfterNextSchoolDay() async {
   } on FormatException {
     LocalStorage.setIsOutdatedSchoolDayAfterNextSchoolDay(true);
     throw const FormatException("Bad response format 👎");
+  }
+  // on Exception {
+  //   LocalStorage.setIsOutdatedSchoolDayAfterNextSchoolDay(true);
+  //   throw TimeoutException("TimeoutException");
+  // }
+}
+
+// Small Timeout
+
+// getter for PageTodayOrLastSchoolDay
+
+Future<dom.Document> getPageTodayOrLastSchoolDaySmallTimeout() async {
+  try {
+    final url = Uri.parse(urlTodayOrLastSchoolDay);
+    final response = await http.get(url).timeout(const Duration(seconds: 1));
+    if (response.statusCode != 200) {
+      LocalStorage.setIsOutdatedTodayOrLastSchoolDay(true);
+      throw HttpException('${response.statusCode}');
+    }
+    LocalStorage.setIsOutdatedTodayOrLastSchoolDay(false);
+    return dom.Document.html(response.body);
+  } on SocketException {
+    LocalStorage.setIsOutdatedTodayOrLastSchoolDay(true);
+    throw const SocketException('No Internet connection 😑');
+  } on HttpException {
+    LocalStorage.setIsOutdatedTodayOrLastSchoolDay(true);
+    throw const HttpException("Couldn't find the post 😱");
+  } on FormatException {
+    LocalStorage.setIsOutdatedTodayOrLastSchoolDay(true);
+    throw const FormatException("Bad response format 👎");
+  } on Exception {
+    LocalStorage.setIsOutdatedTodayOrLastSchoolDay(true);
+    throw TimeoutException("TimeoutException");
+  }
+}
+
+// getter for PageNextSchoolDay
+
+Future<dom.Document> getPageNextSchoolDaySmallTimeout() async {
+  try {
+    final url = Uri.parse(urlNextSchoolDay);
+    final response = await http.get(url).timeout(const Duration(seconds: 1));
+    if (response.statusCode != 200) {
+      throw HttpException('${response.statusCode}');
+    }
+    LocalStorage.setIsOutdatedNextSchoolDay(false);
+    return dom.Document.html(response.body);
+  } on SocketException {
+    LocalStorage.setIsOutdatedNextSchoolDay(true);
+    throw const SocketException('No Internet connection 😑');
+  } on HttpException {
+    LocalStorage.setIsOutdatedNextSchoolDay(true);
+    throw const HttpException("Couldn't find the post 😱");
+  } on FormatException {
+    LocalStorage.setIsOutdatedNextSchoolDay(true);
+    throw const FormatException("Bad response format 👎");
+  } on Exception {
+    LocalStorage.setIsOutdatedNextSchoolDay(true);
+    throw TimeoutException("TimeoutException");
+  }
+}
+
+// getter for PageSchoolDayAfterNextSchoolDay
+
+Future<dom.Document> getPageSchoolDayAfterNextSchoolDaySmallTimeout() async {
+  try {
+    final url = Uri.parse(urlSchoolDayAfterNextSchoolDay);
+    final response = await http.get(url).timeout(const Duration(seconds: 1));
+    if (response.statusCode != 200) {
+      throw HttpException('${response.statusCode}');
+    }
+    LocalStorage.setIsOutdatedSchoolDayAfterNextSchoolDay(false);
+    return dom.Document.html(response.body);
+  } on SocketException {
+    LocalStorage.setIsOutdatedSchoolDayAfterNextSchoolDay(true);
+    throw const SocketException('No Internet connection 😑');
+  } on HttpException {
+    LocalStorage.setIsOutdatedSchoolDayAfterNextSchoolDay(true);
+    throw const HttpException("Couldn't find the post 😱");
+  } on FormatException {
+    LocalStorage.setIsOutdatedSchoolDayAfterNextSchoolDay(true);
+    throw const FormatException("Bad response format 👎");
+  } on Exception {
+    LocalStorage.setIsOutdatedSchoolDayAfterNextSchoolDay(true);
+    throw TimeoutException("TimeoutException");
   }
 }
