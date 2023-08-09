@@ -13,6 +13,7 @@ class CustomConditionalTextFormField extends StatelessWidget {
   final Function(String changedValue) onChanged;
   final TextInputType textInputType;
   final TextInputAction textInputAction;
+  final String? Function(String?)? validator;
 
   const CustomConditionalTextFormField({
     super.key,
@@ -24,6 +25,7 @@ class CustomConditionalTextFormField extends StatelessWidget {
     required this.onChanged,
     required this.textInputType,
     required this.textInputAction,
+    this.validator,
   });
 
   // @override
@@ -52,6 +54,7 @@ class CustomConditionalTextFormField extends StatelessWidget {
                 initialValue: initialValue,
                 style: customBodyTextStyle,
                 decoration: InputDecoration(
+                  // errorStyle: const TextStyle(height: 0),
                   labelText: labelText,
                   labelStyle: customBodyTextStyle,
                   hintText: hintText,
@@ -91,6 +94,10 @@ class CustomConditionalTextFormField extends StatelessWidget {
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.done,
                 onChanged: onChanged,
+                validator: validator,
+                // maxLines: 2,
+                // minLines: 1,
+                // expands: true,
               ),
             ],
           )

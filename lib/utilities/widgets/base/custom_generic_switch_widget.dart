@@ -51,7 +51,7 @@ class CustomGenericSwitch extends StatelessWidget {
                     onChanged: onChanged,
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

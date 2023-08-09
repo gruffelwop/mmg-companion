@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mmg_companion/constants/colors.dart';
 
+import 'package:mmg_companion/constants/colors.dart';
 import 'package:mmg_companion/constants/routes.dart';
 import 'package:mmg_companion/services/app_service.dart';
 import 'package:mmg_companion/services/local_storage_service.dart';

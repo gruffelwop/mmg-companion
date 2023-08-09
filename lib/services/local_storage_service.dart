@@ -8,6 +8,7 @@ class LocalStorage {
   // static const _keyGender = "gender";
   static const _keyCourses = "courses";
   static const _keyClasses = "classes";
+  static const _keyIsG9 = "isG9";
   // static const _keyClass = "class";
   static const _keyIsTeacher = "isTeacher";
   static const _keyAbbreviation = "abbreviation";
@@ -75,6 +76,14 @@ class LocalStorage {
 
   static int? getStartPageIndex() {
     return siteStringMappedToSiteIndex[_preferences!.getString(_keyStartPage)];
+  }
+
+  static Future setIsG9(bool isG9) async {
+    await _preferences!.setBool(_keyIsG9, isG9);
+  }
+
+  static bool? getIsG9() {
+    return _preferences!.getBool(_keyIsG9);
   }
 
   // Classes and Courses

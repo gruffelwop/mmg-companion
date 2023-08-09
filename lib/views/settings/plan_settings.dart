@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mmg_companion/constants/regex.dart';
 
 import 'package:mmg_companion/services/app_service.dart';
 import 'package:mmg_companion/services/local_storage_service.dart';
@@ -14,6 +15,7 @@ class PlanSettings extends StatefulWidget {
 }
 
 class _PlanSettingsState extends State<PlanSettings> {
+  bool? isG9;
   bool? isTeacher;
   bool? isOberstufe;
   bool? automaticCourseEnrollment;
@@ -24,10 +26,16 @@ class _PlanSettingsState extends State<PlanSettings> {
 
   bool isLoading = false;
 
-  RegExp classesRegex = RegExp(r'^\d{1,2}[a-zA-Z]*(,\s\d{1,2}[a-zA-Z]*)*$');
-  RegExp coursesRegex = RegExp(r'^\d[a-zA-Z]*\d(,\s\d[a-zA-Z]*\d)*$');
-  RegExp teacherRegex = RegExp(r'^[a-zA-Z]{4}$');
-  RegExp emptyRegex = RegExp(r'^[a-zA-Z]{0}$');
+  // RegExp classesRegex = RegExp(r'^\d{1,2}[a-zA-Z]*(,\s\d{1,2}[a-zA-Z]*)*$');
+  // RegExp coursesRegex = RegExp(r'^\d[a-zA-Z]*\d(,\s\d[a-zA-Z]*\d)*$');
+  // // RegExp coursesRegex = RegExp(r'^[12][a-zA-Z]*[12](,\s\d[a-zA-Z]*\d)*$');
+  // RegExp teacherRegex = RegExp(r'^[a-zA-Z]{4}$');
+  // RegExp emptyRegex = RegExp(r'^[a-zA-Z]{0}$');
+
+  RegExp? classesRegex;
+  RegExp? coursesRegex;
+  RegExp teacherRegex = Regex.teacherRegex;
+  RegExp emptyRegex = Regex.emptyRegex;
 
   bool? classesInputIsNotValid = false;
   bool? coursesInputIsNotValid = false;
@@ -35,6 +43,7 @@ class _PlanSettingsState extends State<PlanSettings> {
 
   @override
   void initState() {
+    isG9 = LocalStorage.getIsG9() ?? true;
     isTeacher = LocalStorage.getIsTeacher() ?? false;
     isOberstufe = LocalStorage.getIsOberstufe() ?? false;
     automaticCourseEnrollment =
@@ -42,6 +51,9 @@ class _PlanSettingsState extends State<PlanSettings> {
     abbreviation = LocalStorage.getAbbreviation() ?? "";
     courses = LocalStorage.getCourses() ?? "";
     classes = LocalStorage.getClasses() ?? "";
+
+    classesRegex = isG9! ? Regex.classesRegexG9 : Regex.classesRegexG8;
+    coursesRegex = isG9! ? Regex.coursesRegexG9 : Regex.coursesRegexG8;
     super.initState();
   }
 
@@ -71,6 +83,43 @@ class _PlanSettingsState extends State<PlanSettings> {
               });
             }
             await LocalStorage.setIsTeacher(changedValue);
+            await fillIndividualLocalStorage();
+            await Future.delayed(const Duration(seconds: 1));
+            if (mounted) {
+              setState(() {
+                isLoading = false;
+              });
+            }
+          },
+        ),
+
+        // G9 Switch
+        CustomConditionalSwitch(
+          condition: isTeacher == false,
+          initialValue: isG9!,
+          name: "G9",
+          margin: true,
+          experimental: false,
+          onChanged: (changedValue) async {
+            if (mounted) {
+              setState(() {
+                isLoading = true;
+              });
+            }
+            if (mounted) {
+              setState(() {
+                isG9 = changedValue;
+              });
+            }
+            if (mounted) {
+              setState(() {
+                classesRegex =
+                    isG9! ? Regex.classesRegexG9 : Regex.classesRegexG8;
+                coursesRegex =
+                    isG9! ? Regex.coursesRegexG9 : Regex.coursesRegexG8;
+              });
+            }
+            await LocalStorage.setIsG9(changedValue);
             await fillIndividualLocalStorage();
             await Future.delayed(const Duration(seconds: 1));
             if (mounted) {
@@ -111,34 +160,34 @@ class _PlanSettingsState extends State<PlanSettings> {
         ),
 
         // Automatic Courses Switch
-        CustomConditionalSwitch(
-            condition: isOberstufe == true && isTeacher == false,
-            initialValue: automaticCourseEnrollment!,
-            name: "automatic courses",
-            margin: true,
-            experimental: true,
-            onChanged: (changedValue) async {
-              if (mounted) {
-                setState(() {
-                  isLoading = true;
-                });
-              }
-              if (mounted) {
-                setState(() {
-                  automaticCourseEnrollment = changedValue;
-                });
-              }
-              await LocalStorage.setAutomaticCourseEnrollment(changedValue);
-              await fillIndividualLocalStorage();
-              await Future.delayed(const Duration(seconds: 1));
-              if (mounted) {
-                setState(() {
-                  isLoading = false;
-                });
-              }
-            }),
+        // CustomConditionalSwitch(
+        //     condition: isOberstufe == true && isTeacher == false,
+        //     initialValue: automaticCourseEnrollment!,
+        //     name: "automatic courses",
+        //     margin: true,
+        //     experimental: true,
+        //     onChanged: (changedValue) async {
+        //       if (mounted) {
+        //         setState(() {
+        //           isLoading = true;
+        //         });
+        //       }
+        //       if (mounted) {
+        //         setState(() {
+        //           automaticCourseEnrollment = changedValue;
+        //         });
+        //       }
+        //       await LocalStorage.setAutomaticCourseEnrollment(changedValue);
+        //       await fillIndividualLocalStorage();
+        //       await Future.delayed(const Duration(seconds: 1));
+        //       if (mounted) {
+        //         setState(() {
+        //           isLoading = false;
+        //         });
+        //       }
+        //     }),
 
-        // Abbreviation TextFormField
+        // TextFormFields
         Column(
           children: [
             // Teacher TextFormField
@@ -193,12 +242,13 @@ class _PlanSettingsState extends State<PlanSettings> {
                   automaticCourseEnrollment == false,
               initialValue: courses,
               labelText: "courses",
-              hintText: "1e1, 1e2",
+              hintText:
+                  isG9! ? "12, 13 OR 2e1, 3e2, ..." : "11, 12 OR 1e1, 1e2, ...",
               textInputType: TextInputType.text,
               textInputAction: TextInputAction.done,
               isInputNotValid: coursesInputIsNotValid!,
               onChanged: (changedValue) async {
-                if (coursesRegex.hasMatch(changedValue) ||
+                if (coursesRegex!.hasMatch(changedValue) ||
                     emptyRegex.hasMatch(changedValue)) {
                   if (mounted) {
                     setState(() {
@@ -238,12 +288,12 @@ class _PlanSettingsState extends State<PlanSettings> {
               condition: isTeacher == false && isOberstufe == false,
               initialValue: classes,
               labelText: "classes",
-              hintText: "5a, 5asm",
+              hintText: "5, 6, ... OR 5a, 5asm, ...",
               textInputType: TextInputType.text,
               textInputAction: TextInputAction.done,
               isInputNotValid: classesInputIsNotValid!,
               onChanged: (changedValue) async {
-                if (classesRegex.hasMatch(changedValue) ||
+                if (classesRegex!.hasMatch(changedValue) ||
                     emptyRegex.hasMatch(changedValue)) {
                   if (mounted) {
                     setState(() {

@@ -1,4 +1,5 @@
 import 'package:html/dom.dart' as dom;
+
 import 'package:mmg_companion/constants/plan_constants.dart';
 import 'package:mmg_companion/services/local_storage_service.dart';
 
@@ -94,6 +95,12 @@ List<List<String>> getIndividualPlan(List<List<String>> inputPlan) {
 
   List<List<String>> generalVertretungsplan = inputPlan;
   List<List<String>> individualVertretungsplan = [];
+  List<List<String>> semiIndividualVertretungsplan = [];
+
+  RegExp classesRegex = RegExp(r'^\d{1,2}[a-zA-Z]*(,\s\d{1,2}[a-zA-Z]*)*$');
+  RegExp coursesRegex = RegExp(r'^\d[a-zA-Z]*\d(,\s\d[a-zA-Z]*\d)*$');
+  // RegExp teacherRegex = RegExp(r'^[a-zA-Z]{4}$');
+  RegExp emptyRegex = RegExp(r'^[a-zA-Z]{0}$');
 
   // The user hasn't entered anything
 
@@ -102,13 +109,25 @@ List<List<String>> getIndividualPlan(List<List<String>> inputPlan) {
   // The user is in the 'Oberstufe'
 
   if (isTeacher == false && isOberstufe == true && coursesFilter.isEmpty) {
-    return inputPlan;
+    for (List<String> list in generalVertretungsplan) {
+      if (coursesRegex.hasMatch(list[0]) || emptyRegex.hasMatch(list[0])) {
+        semiIndividualVertretungsplan.add(list);
+      }
+    }
+    return semiIndividualVertretungsplan;
+    // return inputPlan;
   }
 
   // The user is in the 'Unter-or Mittelstufe'
 
   if (isTeacher == false && isOberstufe == false && classesFilter.isEmpty) {
-    return inputPlan;
+    for (List<String> list in generalVertretungsplan) {
+      if (classesRegex.hasMatch(list[0]) || emptyRegex.hasMatch(list[0])) {
+        semiIndividualVertretungsplan.add(list);
+      }
+    }
+    return semiIndividualVertretungsplan;
+    // return inputPlan;
   }
 
   // The user is a teacher
@@ -124,6 +143,22 @@ List<List<String>> getIndividualPlan(List<List<String>> inputPlan) {
   // The user is in the 'Oberstufe'
 
   if (isTeacher == false && isOberstufe == true) {
+    for (String number in coursesFilter) {
+      if (number == "11") {
+        for (List<String> list in generalVertretungsplan) {
+          if (list[0].startsWith("1") && !list[0].contains("0")) {
+            individualVertretungsplan.add(list);
+          }
+        }
+      }
+      if (number == "12") {
+        for (List<String> list in generalVertretungsplan) {
+          if (list[0].startsWith("2")) {
+            individualVertretungsplan.add(list);
+          }
+        }
+      }
+    }
     for (String className in coursesFilter) {
       for (List<String> list in generalVertretungsplan) {
         if (className == list[0]) {
@@ -131,31 +166,36 @@ List<List<String>> getIndividualPlan(List<List<String>> inputPlan) {
         }
       }
     }
-    // return individualVertretungsplan;
   }
 
   // The user is in the 'Unter-or Mittelstufe'
 
   if (isTeacher == false && isOberstufe == false) {
+    // for (String className in classesFilter) {
+    //   for (List<String> list in generalVertretungsplan) {
+    //     if (className == list[0]) {
+    //       individualVertretungsplan.add(list);
+    //     }
+    //   }
+    // }
+
     for (String className in classesFilter) {
       for (List<String> list in generalVertretungsplan) {
-        if (className == list[0]) {
+        if (list[0].startsWith(className)) {
           individualVertretungsplan.add(list);
         }
       }
     }
-    // return individualVertretungsplan;
   }
 
   // The user is a teacher
 
   if (isTeacher == true) {
     for (List<String> list in generalVertretungsplan) {
-      if (teacherFilter == list[2]) {
+      if (teacherFilter.toUpperCase() == list[2].toUpperCase()) {
         individualVertretungsplan.add(list);
       }
     }
-    // return individualVertretungsplan;
   }
   return individualVertretungsplan;
 }

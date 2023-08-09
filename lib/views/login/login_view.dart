@@ -22,6 +22,8 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  bool inputIsNotValid = false;
+
   String planUsername = "";
   String planPassword = "";
   bool isPasswordVisible = false;
@@ -36,10 +38,6 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   void initState() {
-    // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    //   statusBarColor: Colors.transparent,
-    //   systemNavigationBarColor: Color(0xff1b1b1b),
-    // ));
     super.initState();
     _applyDefaultSettings();
   }
@@ -414,6 +412,31 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         const CustomMargin(amount: 15),
 
+                        // CustomConditionalTextFormField(
+                        //   condition: true,
+                        //   initialValue: "",
+                        //   labelText: "username",
+                        //   hintText: "username",
+                        //   textInputType: TextInputType.text,
+                        //   textInputAction: TextInputAction.done,
+                        //   isInputNotValid: inputIsNotValid,
+                        //   onChanged: (changedValue) {},
+                        //   validator: (value) {
+                        //     if (value!.isEmpty) {
+                        //       return "enter a username.";
+                        //     } else if (encounteredHttpException) {
+                        //       return "username or password is incorrect.";
+                        //     } else if (encounteredSocketException) {
+                        //       return "no internet connection.";
+                        //     } else if (encounteredFormatException) {
+                        //       return "encountered FormatException.";
+                        //     } else {
+                        //       return null;
+                        //     }
+                        //   },
+                        // ),
+                        // const CustomMargin(amount: 15),
+
                         // Password
 
                         // CustomPasswordTextFormField(
@@ -521,8 +544,78 @@ class _LoginViewState extends State<LoginView> {
                           },
                         ),
                         const CustomMargin(amount: 40),
-                        GestureDetector(
-                          onTap: () async {
+                        // GestureDetector(
+                        //   onTap: () async {
+                        //     if (planUsername.isNotEmpty &&
+                        //         planPassword.isNotEmpty) {
+                        //       try {
+                        //         await checkUsernameAndPassword(
+                        //             username: planUsername,
+                        //             password: planPassword);
+                        //         encounteredHttpException = false;
+                        //         encounteredSocketException = false;
+                        //         encounteredFormatException = false;
+                        //         await LocalStorage.setPlanUsername(
+                        //             planUsername);
+                        //         await LocalStorage.setPlanPassword(
+                        //             planPassword);
+                        //       } on SocketException catch (_) {
+                        //         if (mounted) {
+                        //           setState(() {
+                        //             encounteredSocketException = true;
+                        //           });
+                        //         }
+                        //       } on HttpException catch (_) {
+                        //         if (mounted) {
+                        //           setState(() {
+                        //             encounteredHttpException = true;
+                        //           });
+                        //         }
+                        //       } on FormatException catch (_) {
+                        //         if (mounted) {
+                        //           setState(() {
+                        //             encounteredFormatException = true;
+                        //           });
+                        //         }
+                        //       }
+                        //     }
+                        //     if (mounted) {
+                        //       FocusScope.of(context).unfocus();
+                        //     }
+                        //     final isValid = formKey.currentState!.validate();
+                        //     if (isValid) {
+                        //       if (mounted) {
+                        //         setState(() {
+                        //           isLoading = true;
+                        //         });
+                        //       }
+                        //       await LocalStorage.setIsRegistered(true);
+                        //       await fillLocalStorage();
+                        //       await Future.delayed(const Duration(seconds: 1));
+                        //       if (mounted) {
+                        //         Navigator.of(context).pushNamed(homeRoute);
+                        //       }
+                        //     }
+                        //   },
+                        //   child: Container(
+                        //     height: 60,
+                        //     width: double.infinity,
+                        //     decoration: BoxDecoration(
+                        //       borderRadius:
+                        //           const BorderRadius.all(Radius.circular(10)),
+                        //       color: primaryColor,
+                        //     ),
+                        //     child: Center(
+                        //       child: CustomColoredBodyText(
+                        //         content: "login",
+                        //         color: backgroundColor,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // const CustomMargin(amount: 10),
+                        TextButton(
+                          onPressed: () async {
                             if (planUsername.isNotEmpty &&
                                 planPassword.isNotEmpty) {
                               try {
@@ -560,6 +653,11 @@ class _LoginViewState extends State<LoginView> {
                               FocusScope.of(context).unfocus();
                             }
                             final isValid = formKey.currentState!.validate();
+                            if (!isValid) {
+                              setState(() {
+                                inputIsNotValid = true;
+                              });
+                            }
                             if (isValid) {
                               if (mounted) {
                                 setState(() {
@@ -574,19 +672,20 @@ class _LoginViewState extends State<LoginView> {
                               }
                             }
                           },
-                          child: Container(
-                            height: 60,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
+                          style: TextButton.styleFrom(
+                            elevation: 0,
+                            backgroundColor: primaryColor,
+                            maximumSize: const Size.fromHeight(60),
+                            minimumSize: const Size.fromHeight(60),
+                            shape: const RoundedRectangleBorder(
                               borderRadius:
-                                  const BorderRadius.all(Radius.circular(10)),
-                              color: primaryColor,
+                                  BorderRadius.all(Radius.circular(10)),
                             ),
-                            child: Center(
-                              child: CustomColoredBodyText(
-                                content: "login",
-                                color: backgroundColor,
-                              ),
+                          ),
+                          child: Center(
+                            child: CustomColoredBodyText(
+                              content: "login",
+                              color: backgroundColor,
                             ),
                           ),
                         ),
@@ -600,141 +699,3 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
-
-// return KeyboardDismisser(
-//   gestures: const [
-//     GestureType.onTap,
-//   ],
-//   child: CustomPageScaffold(
-//     child: Stack(
-//       children: [
-//         Align(
-//           alignment: Alignment.topRight,
-//           child: GestureDetector(
-//             child: const CustomBodyText(content: "info"),
-//             onTap: () {
-//               showInfoDialog(
-//                 context,
-//                 "username for the student's plan."
-//                 "\n"
-//                 "&"
-//                 "\n"
-//                 "password for the student's plan",
-//               );
-//             },
-//           ),
-//         ),
-//         const Align(
-//           alignment: Alignment.topLeft,
-//           child: CustomBodyText(content: "mmg companion"),
-//         ),
-//         Column(
-//           mainAxisAlignment: MainAxisAlignment.start,
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             // const CustomHeaderText(content: "mmg companion"),
-//             // const CustomHeaderText(content: "welcome!"),
-//             const CustomMargin(amount: 80),
-//             SizedBox(
-//               height: 60,
-//               width: double.infinity,
-//               child: TextFormField(
-//                 // initialValue: "",
-//                 style: customBodyTextStyle,
-//                 decoration: InputDecoration(
-//                   labelText: "username",
-//                   labelStyle: customBodyTextStyle,
-//                   hintText: "username",
-//                   hintStyle: customBodyTextStyle,
-//                   contentPadding: const EdgeInsets.symmetric(
-//                     horizontal: 20,
-//                     vertical: 22,
-//                   ),
-//                   enabledBorder: OutlineInputBorder(
-//                     borderRadius:
-//                         const BorderRadius.all(Radius.circular(10)),
-//                     borderSide: BorderSide(color: primaryColor),
-//                   ),
-//                   focusedBorder: OutlineInputBorder(
-//                     borderRadius:
-//                         const BorderRadius.all(Radius.circular(10)),
-//                     borderSide: BorderSide(color: primaryColor),
-//                   ),
-//                 ),
-//                 keyboardType: TextInputType.name,
-//                 textInputAction: TextInputAction.next,
-//                 onChanged: (changedValue) async {},
-//               ),
-//             ),
-//             const CustomMargin(amount: 15),
-//             SizedBox(
-//               height: 60,
-//               width: double.infinity,
-//               child: TextFormField(
-//                 obscureText: !isPasswordVisible,
-//                 // initialValue: "",
-//                 style: customBodyTextStyle,
-//                 decoration: InputDecoration(
-//                   labelText: "password",
-//                   // errorText: ,
-//                   // errorStyle: ,
-//                   labelStyle: customBodyTextStyle,
-//                   hintText: "password",
-//                   hintStyle: customBodyTextStyle,
-//                   suffixIcon: IconButton(
-//                     color: primaryColor,
-//                     splashColor: Colors.transparent,
-//                     highlightColor: Colors.transparent,
-//                     icon: isPasswordVisible
-//                         ? const Icon(Icons.visibility_off)
-//                         : const Icon(Icons.visibility),
-//                     onPressed: () {
-//                       setState(() {
-//                         isPasswordVisible = !isPasswordVisible;
-//                       });
-//                     },
-//                   ),
-//                   contentPadding: const EdgeInsets.symmetric(
-//                     horizontal: 20,
-//                     vertical: 22,
-//                   ),
-//                   enabledBorder: OutlineInputBorder(
-//                     borderRadius:
-//                         const BorderRadius.all(Radius.circular(10)),
-//                     borderSide: BorderSide(color: primaryColor),
-//                   ),
-//                   focusedBorder: OutlineInputBorder(
-//                     borderRadius:
-//                         const BorderRadius.all(Radius.circular(10)),
-//                     borderSide: BorderSide(color: primaryColor),
-//                   ),
-//                 ),
-//                 keyboardType: TextInputType.name,
-//                 textInputAction: TextInputAction.done,
-//                 onChanged: (changedValue) async {},
-//               ),
-//             ),
-//             const CustomMargin(amount: 40),
-//             Container(
-//               height: 60,
-//               width: double.infinity,
-//               decoration: BoxDecoration(
-//                 borderRadius: const BorderRadius.all(Radius.circular(10)),
-//                 color: primaryColor,
-//               ),
-//               child: Center(
-//                   child: CustomColoredBodyText(
-//                 content: "login",
-//                 color: backgroundColor,
-//               )),
-//             ),
-//           ],
-//         ),
-//         const Align(
-//           alignment: Alignment.bottomCenter,
-//           child: CustomSmallText(content: "made by gruffelwop"),
-//         ),
-//       ],
-//     ),
-//   ),
-// );

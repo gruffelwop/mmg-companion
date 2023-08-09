@@ -23,11 +23,13 @@ List<List<String>> convertListToPlan(List<String> inputList) {
   // This can only be done here because every plan runs through this function
   // when saved in local storage.
 
-  for (int i = 0; i < chunks.length; i++) {
-    List<String> list = chunks[i];
-    for (int k = 0; k < list.length; k++) {
-      if (list[k].isEmpty) {
-        list[k] = "[${columnNames[k]}]";
+  if (chunks.isNotEmpty) {
+    for (int i = 0; i < chunks.length; i++) {
+      List<String> list = chunks[i];
+      for (int k = 0; k < list.length; k++) {
+        if (list[k].isEmpty) {
+          list[k] = "[${columnNames[k]}]";
+        }
       }
     }
   }

@@ -7,7 +7,6 @@ import 'package:mmg_companion/utilities/widgets/custom_margin_widget.dart';
 import 'package:mmg_companion/utilities/widgets/base/custom_generic_appbar_widget.dart';
 import 'package:mmg_companion/utilities/widgets/custom_scrollable_list_widget.dart';
 import 'package:mmg_companion/views/settings/plan_settings.dart';
-import 'package:mmg_companion/views/settings/push_notifications_settings.dart';
 import 'package:mmg_companion/views/settings/start_page_settings.dart';
 
 class SettingsView extends StatelessWidget {
@@ -22,7 +21,7 @@ class SettingsView extends StatelessWidget {
       child: Column(
         children: [
           CustomScrollableList(
-            nonScrollableTitle: Column(children: const [
+            nonScrollableTitle: const Column(children: [
               CustomGenericAppBar(name: "settings"),
               CustomMargin(amount: 40),
             ]),
@@ -35,8 +34,8 @@ class SettingsView extends StatelessWidget {
                 CustomMargin(amount: 20),
                 PlanSettings(),
                 CustomMargin(amount: 20),
-                PushNotificationsSettings(),
-                CustomMargin(amount: 20),
+                // PushNotificationsSettings(),
+                // CustomMargin(amount: 20),
               ],
             ),
           ),
